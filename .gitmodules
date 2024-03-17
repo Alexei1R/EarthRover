@@ -1,0 +1,17 @@
+
+[submodule "libs/imgui-cmake/imgui"]
+	path = libs/imgui-cmake/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
+[submodule "libs/glm"]
+	path = libs/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "libs/spdlog"]
+	path = libs/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "libs/GameNetworkingSockets"]
+	path = libs/GameNetworkingSockets
+	url = https://github.com/Alexei1R/GameNetworkingSockets.git
+[submodule "libs/glfw"]
+	path = libs/glfw
+	url = https://github.com/glfw/glfw.git
