@@ -14,6 +14,7 @@
 #include "ATOM/Sensors/Frame.h"
 #include "ATOM/Core/ClientLayer.h"
 #include "ATOM/AI/TrainEngine.h"
+#include "ATOM/Thumbnail/Thumbnail.h"
 
 
 
@@ -65,6 +66,7 @@ namespace Atom {
         Frame *m_Frame;
         ClientLayer *m_ClientLayer;
         TrainEngine *m_TrainEngine;
+        ThumbnailGrid *m_ThumbnailGrid;
 
 
         std::vector<std::pair<float, float>> m_LidarData;

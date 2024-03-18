@@ -35,6 +35,9 @@ namespace Atom {
         m_TrainEngine = new TrainEngine();
         PushLayer(m_TrainEngine);
 
+        m_ThumbnailGrid = new ThumbnailGrid("/home/toor/Downloads/");
+        PushLayer(m_ThumbnailGrid);
+
 
         m_ClientLayer->RegisterMessageWithID(2, [&](Message message) {
             ATLOG_INFO("Message Received: ID = 2 {0}", *(int *) message.payload);
@@ -75,6 +78,10 @@ namespace Atom {
             ImGui::TextColored(ImVec4(0, 255, 255, 255), "Control Panel");
             ImGui::Separator();
 
+            //Settings
+            if (ImGui::CollapsingHeader("Settings")) {
+                DrawUISetings();
+            }
 
             //Camera Settings
             if (ImGui::CollapsingHeader("Camera Settings")) {
@@ -101,6 +108,7 @@ namespace Atom {
         m_Frame->Shutdown();
         delete m_Frame;
         delete m_TrainEngine;
+        delete m_ThumbnailGrid;
     }
 
 
@@ -175,13 +183,7 @@ namespace Atom {
                 ImGui::Combo("IP", &m_IPIndex, menuItems, IM_ARRAYSIZE(menuItems));
 
                 if (m_IPIndex == SelectIP) {
-                    // static char inputBuffer[256] = "10.42.0.1";
-                    static char inputBuffer[256] = "192.168.1.101";
-                    // static char inputBuffer[256] = "192.168.8.133";
-                    // static char inputBuffer[256] = "192.168.1.16";
-                    // static char inputBuffer[256] = "192.168.1.8";
-                    // static char inputBuffer[256] = "192.168.156.32";
-                    // static char inputBuffer[256] = "192.168.8.124";
+                    static char inputBuffer[256] = "192.168.1.8";
                     ImGui::InputText("Enter IP", inputBuffer, IM_ARRAYSIZE(inputBuffer));
                     //button or enter key is pressed
                     if (ImGui::Button("Connect") || ImGui::IsKeyPressed(ImGuiKey_Enter, false)) {
