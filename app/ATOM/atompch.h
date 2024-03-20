@@ -61,14 +61,33 @@
 #include <signal.h>
 #endif
 
-
-typedef struct {
-    float pixelFromCenter;
-    float confidence;
-    std::string label;
+#include "opencv4/opencv2/opencv.hpp"
 
 
-}Sign;
+typedef struct Thumbnail
+{
+    //Image
+    std::string ImagePath;
+    //UUID
+    std::string UUID;
+    //Class
+    std::string Class;
+    //Treshold
+    std::string Treshold;
+    //Time
+    std::string Time;
+    //Position
+    glm::vec2 Position;
+    //Size
+    glm::vec2 Size;
+    //Frame
+    cv::Mat m_Frame;
+    //Texture
+    GLuint m_Texture;
+    //Bool IS Texture Generated
+    bool isTextureGenerated = false;
+} Thumbnail;
+
 
 
 

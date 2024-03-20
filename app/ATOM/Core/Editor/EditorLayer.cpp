@@ -16,68 +16,7 @@ namespace Atom
     {
     }
 
-    void EditorLayer::DrawMenu()
-    {
-        if (ImGui::BeginMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
-            {
-                if (ImGui::MenuItem("Open Fille"))
-                {
-                    ATLOG_INFO("Open Fille");
-                    char path[1024];
-                    FILE *f = popen("zenity --file-selection --width=720 --height=480 --modal --center", "r");
-                    fgets(path, 1024, f);
-                    ATLOG_INFO("path: {0}", path);
 
-                };
-
-                if(ImGui::MenuItem("Save File"))
-                {
-                    ATLOG_INFO("Save File");
-                    char path[1024];
-                    FILE *f = popen("zenity --file-selection --save", "r");
-                    fgets(path, 1024, f);
-                    // print filename and path
-                    ATLOG_INFO("path: {0}", path);
-                }
-
-
-                if (ImGui::MenuItem("Exit"))
-                    ATLOG_INFO("Close");
-                ImGui::EndMenu();
-            }
-
-
-            if (ImGui::BeginMenu("Settings"))
-            {
-                if (ImGui::MenuItem("Open Settings"))
-                {
-                    ATLOG_INFO("Settings Open")
-                };
-                ImGui::EndMenu();
-            }
-
-            if (ImGui::BeginMenu("Script"))
-            {
-                if (ImGui::MenuItem("New Script", "Ctrl+Shift+n"))
-                {
-                    ATLOG_INFO("New Script");
-                };
-
-                if (ImGui::MenuItem("Save Script", "Ctrl+Shift+n"))
-                {
-                    ATLOG_INFO("Save Script");
-                };
-
-
-                ImGui::EndMenu();
-            }
-
-
-            ImGui::EndMenuBar();
-        }
-    }
 
 
     void EditorLayer::OnAttach()
@@ -99,7 +38,6 @@ namespace Atom
     void EditorLayer::OnImGuiRender()
     {
 
-        DrawMenu();
 
         for (auto& func : m_FunctionsVenctor)
         {

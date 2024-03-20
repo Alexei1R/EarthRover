@@ -30,9 +30,7 @@ namespace Atom {
         void SetViewportSizeCallback(std::function<void(int, int)> callback) {
             m_ViewportCallbackFunction = callback;
         }
-
     private:
-        void DrawMenu();
 
         std::vector<std::function<void()>> m_FunctionsVenctor;
         std::function<void(int, int)> m_ViewportCallbackFunction;

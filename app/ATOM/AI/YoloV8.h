@@ -53,8 +53,8 @@ struct YoloV8Config {
     // Class thresholds (default are COCO classes)
     std::vector<std::string> classNames = {
         // "car", "closed-road-stand", "crosswalk-sign", "highway-entry-sign", "highway-exit-sign", "no-entry-road-sign", "one-way-road-sign", "parking-sign", "parking-spot", "pedestrian", "priority-sign", "round-about-sign", "stop-line", "stop-sign", "traffic-light"
-
-        "crosswalk-sign", "parking-sign", "pedestrian", "priority-sign", "stop-sign"
+        "burn"
+        // "crosswalk-sign", "parking-sign", "pedestrian", "priority-sign", "stop-sign"
     };
 };
 

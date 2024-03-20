@@ -15,6 +15,8 @@
 #include "ATOM/Core/ClientLayer.h"
 #include "ATOM/AI/TrainEngine.h"
 #include "ATOM/Thumbnail/Thumbnail.h"
+#include "ATOM/Thumbnail/ThumbnailViewer.h"
+
 
 
 
@@ -50,6 +52,8 @@ namespace Atom {
 
         void ConntrollCarUithGamepad();
 
+        void DrawMenu();
+
     private:
         bool m_IsRuning = true;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastTime =
@@ -67,6 +71,11 @@ namespace Atom {
         ClientLayer *m_ClientLayer;
         TrainEngine *m_TrainEngine;
         ThumbnailGrid *m_ThumbnailGrid;
+        ThumbnailViewer *m_ThumbnailViewer;
+
+        std::string m_FilePathOpen = "";
+        std::string m_FilePathSave = "";
+        std::string m_FileName = "";
 
 
         std::vector<std::pair<float, float>> m_LidarData;

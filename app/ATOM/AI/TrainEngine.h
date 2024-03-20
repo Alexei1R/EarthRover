@@ -7,10 +7,10 @@
 
 #include "ATOM/atompch.h"
 #include "YoloV8.h"
+#include <time.h>
+
 
 namespace Atom {
-
-
     class TrainEngine : public Layer {
     public:
         TrainEngine();
@@ -27,14 +27,23 @@ namespace Atom {
 
         virtual void OnImGuiRender() override;
 
-        std::vector<Sign> GetSigns() { return m_Signs; }
+        std::vector<Thumbnail> &GetThumbnails() { return m_Thumbnails; }
 
         void OpenVideoCapture();
 
         void Shutdown();
 
+
+
     private:
-        std::vector<Sign> m_Signs;
+        std::vector<Thumbnail> m_Thumbnails;
+        const double m_MinDetectionDuration = 1.0;
+
+        std::chrono::time_point<std::chrono::high_resolution_clock> lastTime =
+                std::chrono::high_resolution_clock::now();
+
+        std::time_t currentTime = std::time(nullptr);
+        std::tm* localTime = std::localtime(&currentTime);
 
 #ifdef NDEBUG
 

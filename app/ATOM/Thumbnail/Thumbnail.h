@@ -7,28 +7,18 @@
 
 #include "ATOM/atompch.h"
 #include "Networking/Server.h"
+#include "ATOM/AI/TrainEngine.h"
+#include "ATOM/Serialize/Serialize.h"
 
 namespace Atom {
 
-    typedef struct Thumbnail
-    {
-        //Image
-        std::string ImagePath;
-        //Class
-        std::string Class;
-        //Treshold
-        std::string Treshold;
-        //Time
-        std::string Time;
-        //Color
-        ImVec4 Color;
-    } Thumbnail;
+
 
 
     class ThumbnailGrid : public Layer {
     public:
     public:
-        ThumbnailGrid(std::string path);
+        ThumbnailGrid(std::string path , TrainEngine *trainEngine);
 
         ~ThumbnailGrid();
 
@@ -43,12 +33,11 @@ namespace Atom {
         virtual void OnImGuiRender() override;
 
     private:
-        void DrawThumbnail(Thumbnail &thumbnail , int index, bool &hovered, bool &selected);
+        // void DrawThumbnail(Thumbnail &thumbnail , int index, bool &hovered, bool &selected);
 
     private:
-        //Vector of Thumbnails
+        TrainEngine *m_TrainEngine;
         std::vector<Thumbnail> m_Thumbnails;
-
         //Size Thumbnail
         glm::vec2 m_ThumbnailSize = {200, 250};
         float m_VerticalPadding = 0;

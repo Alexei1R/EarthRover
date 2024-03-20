@@ -66,6 +66,10 @@ set(SOURCES
         ATOM/AI/YoloV8.h
         ATOM/Thumbnail/Thumbnail.cpp
         ATOM/Thumbnail/Thumbnail.h
+        ATOM/Serialize/Serialize.cpp
+        ATOM/Serialize/Serialize.h
+        ATOM/Thumbnail/ThumbnailViewer.cpp
+        ATOM/Thumbnail/ThumbnailViewer.h
 
 )
 
@@ -86,6 +90,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
             ${CUDA_LIBRARIES}
             ${CMAKE_THREAD_LIBS_INIT}
             ${TensorRT_LIBRARIES}
+            yaml-cpp::yaml-cpp
 
     )
 
@@ -100,6 +105,7 @@ else ()
             spdlog
             GameNetworkingSockets
             ${OpenCV_LIBS}
+            yaml-cpp::yaml-cpp
     )
     target_include_directories(executable PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 

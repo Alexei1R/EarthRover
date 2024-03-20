@@ -82,6 +82,8 @@ namespace Atom {
 
 
         m_VideoCapture.SetFrameRecivedCallback([&](cv::Mat &frame) {
+            // ATLOG_INFO(new frame with size
+                ATLOG_INFO("New frame with size: " + std::to_string(frame.cols) + "x" + std::to_string(frame.rows));
             // cv::flip(frame,frame,0);
                 //flip horizontal and vertical
                     // cv::flip(frame, frame, -1);
