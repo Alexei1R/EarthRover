@@ -8,12 +8,13 @@
 
 namespace Atom
 {
-    char inputBuffer[256] = "/home/toor/Downloads/video.mp4";
+    char inputBuffer[256] = "v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! videoconvert ! appsink";
     static const char* comboItems[] = {
         "nvarguscamerasrc sensor_id=0 ! video/x-raw(memory:NVMM),width=640, height=480, framerate=30/1 ! nvvidconv flip-method=0 ! video/x-raw,width=640, height=480 ! nvvidconv ! video/x-raw,format=BGRx ! videoconvert ! appsink",
         "v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
         "v4l2src device=/dev/video1 ! video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! videoconvert ! appsink",
-        "#1%message12345$2%message26789$"
+        "/home/admin/Downloads/document_5465145279122521540.mp4",
+        "#1%v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! videoconvert ! appsink$2%v4l2src device=/dev/video2 ! video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! videoconvert ! appsink$"
     };
 
     Application* Application::s_Instance = nullptr;
@@ -208,7 +209,8 @@ namespace Atom
 
                 if (m_IPIndex == SelectIP)
                 {
-                    static char inputBuffer[256] = "192.168.1.8";
+                    // static char inputBuffer[256] = "192.168.189.81";
+                    static char inputBuffer[256] = "10.42.0.1";
                     ImGui::InputText("Enter IP", inputBuffer, IM_ARRAYSIZE(inputBuffer));
                     //button or enter key is pressed
                     if (ImGui::Button("Connect") || ImGui::IsKeyPressed(ImGuiKey_Enter, false))

@@ -32,34 +32,29 @@ namespace Atom
 
     void ThumbnailViewer::OnFixedUpdate()
     {
-        //Copy the thumbnails from the train engine
-        // m_Thumbnails = m_TrainEngine->GetThumbnails();
+        
+        //Filter the thumbnails by treadhold
+        m_FilteredThumbnails.clear();
+        for (auto& thumbnail : m_Thumbnails)
+        {
+            if (std::stof(thumbnail.Treshold) >= m_ThumbnailTreshold)
+            {
+                m_FilteredThumbnails.push_back(thumbnail);
+            }
+        }
 
-        // glGenTextures(1, &textureID);
-        // glBindTexture(GL_TEXTURE_2D, textureID);
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mat.cols, mat.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, mat.ptr());
-        // glBindTexture(GL_TEXTURE_2D, 0);
-        //create a texture for each thumbnail
+        //Sort the thumbnails by time bool m_SortByTimeBeginWithNewest = true;
+        if (m_SortByTimeBeginWithNewest)
+        {
+            std::sort(m_FilteredThumbnails.begin(), m_FilteredThumbnails.end(),
+                      [](const Thumbnail& a, const Thumbnail& b) { return a.Time > b.Time; });
+        }
+        else
+        {
+            std::sort(m_FilteredThumbnails.begin(), m_FilteredThumbnails.end(),
+                      [](const Thumbnail& a, const Thumbnail& b) { return a.Time < b.Time; });
+        }
 
-
-        // for (size_t i = 0; i < m_Thumbnails.size(); ++i)
-        // {
-        //     if (!m_Thumbnails[i].m_Frame.empty())
-        //     {
-        //         if(m_Thumbnails[i].isTextureGenerated == false)
-        //         {
-        //             glGenTextures(1, &m_Thumbnails[i].m_Texture);
-        //             glBindTexture(GL_TEXTURE_2D, m_Thumbnails[i].m_Texture);
-        //             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        //             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Thumbnails[i].m_Frame.cols, m_Thumbnails[i].m_Frame.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, m_Thumbnails[i].m_Frame.data);
-        //             glBindTexture(GL_TEXTURE_2D, 0);
-        //             m_Thumbnails[i].isTextureGenerated = true;
-        //         }
-        //     }
-        // }
     }
 
 
@@ -72,44 +67,26 @@ namespace Atom
         ImGui::SetWindowPos(ImVec2(300, 300), ImGuiCond_FirstUseEver);
 
 
-
-
-
-
         if (ImGui::Button("Open Folder"))
         {
-            ATLOG_INFO("Save File");
-            char path[1024];
-            FILE* f = popen("zenity --file-selection --directory", "r");
-            fgets(path, 1024, f);
-            ATLOG_INFO("path: {0}", path);
-
-            // Remove trailing newline character if present
-            path[strcspn(path, "\n")] = 0;
-
-            // Construct path to YAML file
-            std::string yamlFilePath = std::string(path) + "/data.yaml";
-
-            // Check if the YAML file exists
-            std::ifstream file(yamlFilePath);
-            if (!file)
-            {
-                ATLOG_ERROR("Failed to open YAML file: {0}", yamlFilePath);
-            }
-            else
-            {
-                // Deserialize thumbnails from the YAML file
-                m_Thumbnails = Serialize::DeSerializeData(yamlFilePath);
-            }
-
-            pclose(f);
+            std::thread t(&ThumbnailViewer::ExecuteSystemCommandAsync, this, "zenity --file-selection --directory --modal --title=\"Select a folder\"");
+            t.detach();
         }
+        ImGui::SameLine();
+        ImGui::Text("Thumbnails: %d", m_FilteredThumbnails.size());
+
+        //Checkbox for sorting by time
+        ImGui::Checkbox("Sort by time", &m_SortByTimeBeginWithNewest);
+
+        ImGui::Spacing();
+        //Slider for the treadhold
+        ImGui::SliderFloat("Treadhold", &m_ThumbnailTreshold, 0.0f, 1.0f);
+        ImGui::Spacing();
 
 
 
 
-
-        if (m_Thumbnails.size() > 1)
+        if (m_FilteredThumbnails.size() > 1)
         {
             float availableWidth = ImGui::GetContentRegionAvail().x - 35;
             m_ThumbnailsPerRow = std::max(1, (int)(availableWidth / m_ThumbnailSize.x));
@@ -123,12 +100,12 @@ namespace Atom
             bool hovered = false;
             bool selected = false;
 
-            for (size_t i = 0; i < m_Thumbnails.size(); ++i)
+            for (size_t i = 0; i < m_FilteredThumbnails.size(); ++i)
             {
                 if (i % m_ThumbnailsPerRow != 0)
                     ImGui::SameLine(0.0f, totalPadding);
 
-                DrawThumbnail(m_Thumbnails[i], i, hovered, selected);
+                DrawThumbnail(m_FilteredThumbnails[i], i, hovered, selected);
             }
 
             // End scrolling region
@@ -148,6 +125,8 @@ namespace Atom
                                    ImVec2(m_ThumbnailSize.x, m_ThumbnailSize.y)))
         {
             ATLOG_INFO("Thumbnail {0} clicked", index);
+            std::thread t(&ThumbnailViewer::OpenImageInDefaultViewerAsync, this, thumbnail.ImagePath + thumbnail.UUID + ".png");
+            t.detach();
             selected = true;
         }
 
@@ -165,9 +144,6 @@ namespace Atom
         //draw a rectagle 200 x 150 center top of the thumbnail
         draw_list->AddRectFilled(ImVec2(min.x + 3, min.y + 3), ImVec2(min.x + 197, min.y + 147), IM_COL32(0, 0, 0, 255),
                                  10.0f);
-        //resize the image to fit the rectangle
-        draw_list->AddImage((void*)thumbnail.m_Texture, ImVec2(min.x + 3, min.y + 3), ImVec2(min.x + 197, min.y + 147),
-                            ImVec2(0, 0), ImVec2(1, 1));
 
 
         //print the class treadhold and time on the top of the thumbnail
@@ -180,10 +156,79 @@ namespace Atom
         if (isHovered)
         {
             ImGui::BeginTooltip();
-            ImGui::Text("Class: %s", thumbnail.Class.c_str());
-            ImGui::Text("Treshold: %s", thumbnail.Treshold.c_str());
-            ImGui::Text("Time: %s", thumbnail.Time.c_str());
+            if (m_HoveredIndex != index)
+            {
+                // m_FrameOnHover read using opencv , create a texture and display it
+                m_FrameOnHover = cv::imread(thumbnail.ImagePath + thumbnail.UUID + ".png");
+                if (!m_FrameOnHover.empty())
+                {
+                    // m_HoveredTexture
+                    glGenTextures(1, &m_HoveredTexture);
+                    glBindTexture(GL_TEXTURE_2D, m_HoveredTexture);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_FrameOnHover.cols, m_FrameOnHover.rows, 0, GL_BGR,
+                                 GL_UNSIGNED_BYTE, m_FrameOnHover.data);
+                }
+                m_HoveredIndex = index;
+            }
+            if (m_HoveredTexture != 0)
+            {
+                ImGui::Image((void*)(intptr_t)m_HoveredTexture, ImVec2(480, 360));
+            }
             ImGui::EndTooltip();
         }
+
     }
+
+
+
+
+    void ThumbnailViewer::ExecuteSystemCommandAsync(const std::string& command)
+    {
+        // Acquire lock
+        std::lock_guard<std::mutex> lock(m_Mutex);
+
+        char path[1024];
+        FILE* f = popen(command.c_str(), "r");
+        if (f)
+        {
+            fgets(path, 1024, f);
+            path[strcspn(path, "\n")] = 0;
+            pclose(f);
+
+            std::string yamlFilePath = std::string(path) + "/data.yaml";
+            std::ifstream file(yamlFilePath);
+            if (!file)
+            {
+                ATLOG_ERROR("Failed to open YAML file: {0}", yamlFilePath);
+            }
+            else
+            {
+                // Deserialize thumbnails from the YAML file
+                m_Thumbnails = Serialize::DeSerializeData(yamlFilePath);
+            }
+        }
+        else
+        {
+            ATLOG_ERROR("Failed to execute system command.");
+        }
+    }
+
+    void ThumbnailViewer::OpenImageInDefaultViewerAsync(const std::string& imagePath)
+    {
+        // Acquire lock
+        std::lock_guard<std::mutex> lock(m_Mutex);
+
+        std::string command = "xdg-open " + imagePath;
+        int result = system(command.c_str());
+        if (result != 0)
+        {
+            ATLOG_ERROR("Failed to open image in default viewer.");
+        }
+
+        // Update the currently opened image path
+        m_CurrentlyOpenedImage = imagePath;
+    }
+
 }

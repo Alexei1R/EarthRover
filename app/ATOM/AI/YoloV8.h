@@ -33,13 +33,13 @@ struct Object {
 // Can pass these arguments as command line parameters.
 struct YoloV8Config {
     // The precision to be used for inference
-    Precision precision = Precision::FP16;
+    Precision precision = Precision::FP32;
     // Calibration data directory. Must be specified when using INT8 precision.
     std::string calibrationDataDirectory;
     // Probability threshold used to filter detected objects
-    float probabilityThreshold = 0.5f;
+    float probabilityThreshold = 0.3f;
     // Non-maximum suppression threshold
-    float nmsThreshold = 0.65f;
+    float nmsThreshold = 0.5f;
     // Max number of detected objects to return
     int topK = 100;
     // Segmentation config options
@@ -49,12 +49,12 @@ struct YoloV8Config {
     float segmentationThreshold = 0.5f;
     // Pose estimation options
     int numKPS = 17;
-    float kpsThreshold = 0.5f;
+    float kpsThreshold = 0.3f;
     // Class thresholds (default are COCO classes)
     std::vector<std::string> classNames = {
         // "car", "closed-road-stand", "crosswalk-sign", "highway-entry-sign", "highway-exit-sign", "no-entry-road-sign", "one-way-road-sign", "parking-sign", "parking-spot", "pedestrian", "priority-sign", "round-about-sign", "stop-line", "stop-sign", "traffic-light"
-        "burn"
-        // "crosswalk-sign", "parking-sign", "pedestrian", "priority-sign", "stop-sign"
+        // "burn"
+        "crosswalk-sign", "parking-sign", "pedestrian", "priority-sign", "stop-sign"
     };
 };
 

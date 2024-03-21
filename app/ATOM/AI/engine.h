@@ -70,7 +70,7 @@ enum class Precision {
 // Options for the network
 struct Options {
     // Precision to use for GPU inference.
-    Precision precision = Precision::FP16;
+    Precision precision = Precision::FP32;
     // If INT8 precision is selected, must provide path to calibration dataset directory.
     std::string calibrationDataDirectoryPath;
     // The batch size to be used when computing calibration data for INT8 inference.

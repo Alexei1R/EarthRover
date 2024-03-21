@@ -13,7 +13,7 @@ namespace Atom {
         std::string Title;
         unsigned int Width, Height;
 
-        WindowSpecs(const std::string title = "Atom", int width = 1080, int height = 720)
+        WindowSpecs(const std::string title = "Agro Squad", int width = 1500, int height = 800)
                 :Title(title), Width(width), Height(height) {}
     };
 

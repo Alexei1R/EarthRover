@@ -80,12 +80,9 @@ typedef struct Thumbnail
     glm::vec2 Position;
     //Size
     glm::vec2 Size;
-    //Frame
-    cv::Mat m_Frame;
-    //Texture
-    GLuint m_Texture;
-    //Bool IS Texture Generated
-    bool isTextureGenerated = false;
+    //Show the thumbnail
+    bool Show = true;
+
 } Thumbnail;
 
 

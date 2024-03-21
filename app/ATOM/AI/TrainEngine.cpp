@@ -13,7 +13,7 @@ namespace Atom
         : Layer("TrainEngine")
     {
 #ifdef NDEBUG
-        m_Model = new YoloV8("/home/toor/Code/EarthRover/app/ASSETS/mod.onnx", config);
+        m_Model = new YoloV8("/home/toor/Code/EarthRover/app/ASSETS/roadsign.onnx", config);
         m_Frame = &Application::GetApp().GetFrame().GetNativeFrame();
 #endif
     }
@@ -63,7 +63,15 @@ namespace Atom
                 // m_LocalFrame
                 cv::flip(m_LocalFrame, m_LocalFrame,
                          90);
+                auto detectionStartTime = std::chrono::high_resolution_clock::now();
+
                 const auto objects = m_Model->detectObjects(m_LocalFrame);
+                // Stop measuring object detection time
+                auto detectionEndTime = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double, std::milli> detectionTimeSpan = detectionEndTime - detectionStartTime;
+                detectionTime = detectionTimeSpan.count();
+
+
                 // Draw the bounding boxes on the image
                 m_Model->drawObjectLabels(m_LocalFrame, objects);
                 glBindTexture(GL_TEXTURE_2D, m_Texture);
@@ -82,10 +90,6 @@ namespace Atom
                 }
                 glBindTexture(GL_TEXTURE_2D, 0);
 
-                // auto currentTime = std::chrono::high_resolution_clock::now();
-                // std::chrono::duration<double, std::milli> timeSpan = currentTime - lastTime;
-                // if (timeSpan.count() > 100)
-
                 if (ImGui::IsKeyPressed(ImGuiKey_Space))
                 {
                     for (const auto& object : objects)
@@ -99,11 +103,12 @@ namespace Atom
                         ATLOG_INFO("Image saved at: {0}", thumbnail.ImagePath + thumbnail.UUID + ".png");
                         thumbnail.Class = m_Model->getLabels()[object.label];
                         thumbnail.Treshold = std::to_string(object.probability);
+                        auto now = std::time(nullptr);
+                        localTime = std::localtime(&now);
                         thumbnail.Time = std::to_string(localTime->tm_hour) + ":" + std::to_string(localTime->tm_min) +
                             ":" + std::to_string(localTime->tm_sec);
                         thumbnail.Position = glm::vec2(object.rect.x, object.rect.y);
                         thumbnail.Size = glm::vec2(object.rect.width, object.rect.height);
-                        thumbnail.m_Frame = m_LocalFrame;
                         m_Thumbnails.push_back(thumbnail);
                     }
 
@@ -111,7 +116,7 @@ namespace Atom
                 }
 
                 //if button enter is presed take a  photo
-                if (ImGui::IsKeyPressed(ImGuiKey_Enter))
+                if (ImGui::IsKeyPressed(ImGuiKey_Equal))
                 {
                     std::string randname = std::to_string(rand() % 10000000000000000);
                     cv::imwrite(std::filesystem::current_path().string() + "/ASSETS/" + randname + ".png", *m_Frame);
@@ -125,6 +130,9 @@ namespace Atom
     {
         ImGui::Begin("Ai Engine");
 #ifdef NDEBUG
+        // print detection time and frame rate
+        ImGui::Text("Detection Time: %f ms", detectionTime);
+        ImGui::Text("Frame Rate: %d", m_FrameRate);
 
         if (isTextureGenerated == true)
         {

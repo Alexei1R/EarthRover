@@ -44,6 +44,8 @@ namespace Atom {
 
         std::time_t currentTime = std::time(nullptr);
         std::tm* localTime = std::localtime(&currentTime);
+        int m_FrameRate = 0;
+        double detectionTime = 0.0;
 
 #ifdef NDEBUG
 
